@@ -248,19 +248,19 @@ public class MemberInterpreter {
 					"getter / setter function");
 		}
 
-		boolean isAnomynous = false;
+		boolean isAnonymous = false;
 		if (functionName.equals("(")) {
-			System.out.println("anomynous function detected! Result could be unstable!");
-			isAnomynous = true;
+			System.out.println("anonymous function detected! Result could be unstable!");
+			isAnonymous = true;
 			parser.stepBack();
 			elements.remove(elements.size() - 1);
 		}
 
 		Variable function = null;
 		
-		if(isAnomynous){
+		if(isAnonymous){
 			function = new Variable("");
-			function.setAnomynous();
+			function.setAnonymous();
 		}
 		else
 			function = new Variable(functionName);

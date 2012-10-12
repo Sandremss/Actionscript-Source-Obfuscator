@@ -17,7 +17,7 @@ public class Variable implements IAddVariable, IRenameLockable {
 	private ArrayList<Variable> _argVars;
 	private boolean _renamed;
 	private boolean _isOverride;
-	private boolean _anomynous = false;
+	private boolean _anonymous = false;
 
 	public Variable(String variableName) {
 		RenameObjectCounter.increaseCount(1);
@@ -108,12 +108,12 @@ public class Variable implements IAddVariable, IRenameLockable {
 		_renamed = true;
 	}
 
-	public void setAnomynous() {
-		_anomynous = true;
+	public void setAnonymous() {
+		_anonymous = true;
 		lockRename();
 	}
 
 	public boolean isAnomynous() {
-		return _anomynous;
+		return _anonymous;
 	}
 }
