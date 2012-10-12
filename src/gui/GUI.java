@@ -105,11 +105,8 @@ public class GUI extends JPanel {
 
 	public GUI() {
 		super(new GridLayout(1, 0));
+		File file = new File("in");
 
-		File text = new File("text.txt");
-		System.out.println("DOES IT EXIST?  : " + text.exists());
-
-		File file = new File("./in");
 		if (!file.exists())
 			file.mkdir();
 
@@ -200,18 +197,14 @@ public class GUI extends JPanel {
 			}
 
 		});
-		
+
 		JPanel small1 = new JPanel();
 		JPanel small2 = new JPanel();
-		
+
 		small1.add(small2, BorderLayout.EAST);
-		
-		
+
 		JPanel small3 = new JPanel();
 		small2.add(small3);
-		
-		
-		
 
 		JButton copyRightButton = new JButton("CopyRight");
 		small3.add(copyRightButton);

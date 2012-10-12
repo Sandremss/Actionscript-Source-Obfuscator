@@ -29,8 +29,8 @@ public class CodeParser {
 	private int _cachedChar;
 	private String _last;
 	private boolean _steppedBack;
-	@SuppressWarnings("unused")
-	private int _lines; //TODO make error logging more accurate with line number
+	private int _lines; // TODO make error logging more accurate with line
+						// number
 	private int _charIndex;
 	private int _elements;
 	private ArrayList<Integer> _newLines;
@@ -52,7 +52,16 @@ public class CodeParser {
 		// TODO : make HashMap with Integer and Boolean
 		_spaces = new ArrayList<Integer>();
 		_next = preNext();
-		_next = _next.substring(1);
+		// TODO LAST minute fix for windows, there is some weird bug with the
+		// first character not working out...
+		// A class should start with a package word anyway so I'll leave it at
+		// this for the time being.
+		while (!_next.isEmpty() && _next.charAt(0) != 'p') {
+			if (_next.length() == 1)
+				_next = "";
+			else
+				_next = _next.substring(1);
+		}
 	}
 
 	public boolean hasNext() {
@@ -69,8 +78,7 @@ public class CodeParser {
 		_next = preNext();
 
 		for (int i = 0; i < out.length(); i++) {
-			if (out.charAt(i) == '\n' || out.charAt(i) == '\r'
-					|| out.charAt(i) == '\t') {
+			if (out.charAt(i) == '\n' || out.charAt(i) == '\r' || out.charAt(i) == '\t') {
 				System.out.println("NEW LINE IN THE FUCKING OUT !!!!");
 				System.out.println("word : " + out);
 				System.out.println((int) out.charAt(0));
@@ -108,26 +116,24 @@ public class CodeParser {
 		// see
 		// http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/operators.html
 		// for a list of operators
-		char[] separationChars = { ')', '(', ';', '{', '}', ',', '-', '+', '%',
-				'&', '*', '<', '>', '^', '|', '~', '!', '/', '?', ':', '[',
-				']', '.', '=' };
+		char[] separationChars = { ')', '(', ';', '{', '}', ',', '-', '+', '%', '&', '*', '<', '>', '^', '|', '~', '!',
+				'/', '?', ':', '[', ']', '.', '=' };
 
 		// some pairs of separation characters need to stay paired to have the
 		// same meaning, store them as well
 		// the '//' combo is not included because this should already be
 		// filtered by the parser
-		char[] separationDoubles = { '-', '-', '+', '+', '+', '=', '/', '=',
-				'%', '=', '*', '=', '-', '=', '<', '<', '>', '>', '&', '=',
-				'|', '=', '^', '=', '=', '=', '>', '=', '!', '=', '<', '=',
-				'&', '&', '|', '|', ':', ':', '.', '.', '/', '/', '/', '*' };
+		char[] separationDoubles = { '-', '-', '+', '+', '+', '=', '/', '=', '%', '=', '*', '=', '-', '=', '<', '<',
+				'>', '>', '&', '=', '|', '=', '^', '=', '=', '=', '>', '=', '!', '=', '<', '=', '&', '&', '|', '|',
+				':', ':', '.', '.', '/', '/', '/', '*' };
 
 		// there are even triple combinations which we cannot break without
 		// altering the syntaxes meaning, luckily they're all build upon the
 		// pairs
-		//EDIT [ADDED ...] for argument of functions!
+		// EDIT [ADDED ...] for argument of functions!
 
-		char[] separationTriples = { '>', '>', '>', '<', '<', '=', '>', '>',
-				'=', '=', '=', '=', '!', '=', '=', '&', '&', '=', '|', '|', '=', '.', '.', '.' };
+		char[] separationTriples = { '>', '>', '>', '<', '<', '=', '>', '>', '=', '=', '=', '=', '!', '=', '=', '&',
+				'&', '=', '|', '|', '=', '.', '.', '.' };
 
 		// whoopiedoo there even is a quadruple character operator combination!
 		char[] separationQuadruples = { '>', '>', '>', '=' };
@@ -138,8 +144,7 @@ public class CodeParser {
 
 		char[] commentBlockEnd = { '*', '/' };
 
-		char[][] sets = { separationChars, separationDoubles,
-				separationTriples, separationQuadruples };
+		char[][] sets = { separationChars, separationDoubles, separationTriples, separationQuadruples };
 
 		int state = FIRST_ITERATION;
 
@@ -343,28 +348,32 @@ public class CodeParser {
 		return false;
 	}
 
-	/**returns true if the integer is even
+	/**
+	 * returns true if the integer is even
 	 * 
-	 * @param i MERPDERPW
+	 * @param i
+	 *            MERPDERPW
 	 * @return if i is even
 	 */
 	private boolean even(int i) {
 		return i / 2 == (i + 1) / 2;
 	}
 
-	/**Makes the Parser take a step back, so it will give the same word twice
+	/**
+	 * Makes the Parser take a step back, so it will give the same word twice
 	 * 
 	 */
 	public void stepBack() {
 		_steppedBack = true;
 	}
 
-	/**Gives additional error info about the occurrence of the parsing error such as line and character and file.
+	/**
+	 * Gives additional error info about the occurrence of the parsing error
+	 * such as line and character and file.
 	 * 
 	 * @return
 	 */
 	public String errorInfo() {
-		return "In " + _fileName + " line : " + _newLines.size()
-				+ " character : " + _charIndex;
+		return "In " + _fileName + " line : " + _newLines.size() + " character : " + _charIndex;
 	}
 }
