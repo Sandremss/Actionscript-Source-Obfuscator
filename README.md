@@ -1,20 +1,35 @@
+----------------------------------------
+Actionscript 3.0 Source Code Obfuscator
+----------------------------------------
+
+Obfuscate your actionscript project with this Obfuscator. This Actionscript Obfuscator obfuscates:
+- package names
+- class names
+- variable names
+- function names
+
+These changes will be updated on any other Actionscript files you include in the Obfuscation process!
+
+
+
 ------------------------
 How to run the .jar file
 ------------------------
 
+You need have a Java runtime installed. This Project uses JavaSE1-6
 
-Double click (if you have Java 6 runtime installed)
+Double click
 
 
 Run from Terminal:
 
 GUI Mode:
 
-	$ java -jar Obfuscator.jar 
+	$ Java -jar Obfuscator.jar 
 
 Terminal Mode:
 
-	$ java -cp Obfuscator.jar main.Obfuscate <args>
+	$ Java -cp Obfuscator.jar main.Obfuscate <args>
 
 Arguments:
 
@@ -40,8 +55,9 @@ Tips:
 
 -If you receive an error try running the program with the command line in order to see debug traces and get an error report.
 
-
+------------
 Unsupported:
+------------
 
 1.	Anonymous Functions, will terminate the program
 		They're slower and have no architectual use, if you want to manually obfuscate your program: by all means, you won't need this obfuscator =).
