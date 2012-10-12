@@ -18,18 +18,18 @@ How to run the .jar file
 
 You need have a Java runtime installed. This Project uses JavaSE1-6
 
-Double click
+Double click (Windows)
 
 
 Run from Terminal:
 
 GUI Mode:
 
-	$ Java -jar Obfuscator.jar 
+	$ java -jar Obfuscator.jar 
 
 Terminal Mode:
 
-	$ Java -cp Obfuscator.jar main.Obfuscate <args>
+	$ java -cp Obfuscator.jar main.Obfuscate <args>
 
 Arguments:
 
