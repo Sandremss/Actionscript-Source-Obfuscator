@@ -33,12 +33,12 @@ Terminal Mode:
 
 Arguments:
 
--nolocal | don't obfuscate local variables
--nopackages | don't obfuscate packages
--noclasses | don't obfuscate class names
--uniquenames | give every field an unique name
--namelength <length> | the length of each unique name, you need to also use -uniquenames
--help | display available commands
+ -nolocal | don't obfuscate local variables
+ -nopackages | don't obfuscate packages
+ -noclasses | don't obfuscate class names
+ -uniquenames | give every field an unique name
+ -namelength <length> | the length of each unique name, you need to also use -uniquenames
+ -help | display available commands
 
 
 
