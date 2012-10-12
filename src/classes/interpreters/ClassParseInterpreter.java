@@ -70,6 +70,7 @@ public class ClassParseInterpreter {
 		}
 
 		for (Variable var : _members) {
+			if(!var.isAnomynous())
 			_translationMap.put(var.getOldName(), var);
 		}
 

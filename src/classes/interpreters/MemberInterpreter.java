@@ -248,23 +248,23 @@ public class MemberInterpreter {
 					"getter / setter function");
 		}
 
+		boolean isAnomynous = false;
 		if (functionName.equals("(")) {
-			/*
-			 * It’s also worth noting that in almost every case, the use of an
-			 * anonymous function in your code indicates an architectural
-			 * problem. There are almost no real uses for anonymous functions –
-			 * they are less efficient, much harder to debug, and far harder to
-			 * grok when reading code.
-			 * 
-			 * - Grant Skinner
-			 * 9 Oct 08 at 8:52 am 
-			 */
-			rageQuit(
-					"Anonymous Functions are not supported, better grow some stable coding habits ;)",
-					parser);
+			System.out.println("anomynous function detected! Result could be unstable!");
+			isAnomynous = true;
+			parser.stepBack();
+			elements.remove(elements.size() - 1);
 		}
 
-		Variable function = new Variable(functionName);
+		Variable function = null;
+		
+		if(isAnomynous){
+			function = new Variable("");
+			function.setAnomynous();
+		}
+		else
+			function = new Variable(functionName);
+		
 		// store whether this function overrides
 		function.setOverride(occursBefore(elements, "override", 5));
 
