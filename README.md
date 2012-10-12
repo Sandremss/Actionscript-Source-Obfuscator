@@ -2,7 +2,6 @@
 How to run the .jar file
 ------------------------
 
-LOL changed! Yeah!
 
 Double click (if you have Java 6 runtime installed)
 
