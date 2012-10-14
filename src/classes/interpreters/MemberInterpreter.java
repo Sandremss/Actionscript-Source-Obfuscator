@@ -224,7 +224,6 @@ public class MemberInterpreter {
 	 * @param type
 	 */
 	private static void checkVector(CodeParser parser, ArrayList<String> elements, Variable member, String type) {
-		System.out.println("check vector: " + type);
 		if (type.equals("Vector.<")) {
 			System.out.println("type is a vector!");
 			String vectorType = getOrFail(parser, elements, "Vector.<");

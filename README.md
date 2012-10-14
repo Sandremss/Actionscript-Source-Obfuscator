@@ -49,25 +49,49 @@ Arguments:
 6. -help | display available commands
 
 
+**Tips n Tricks:**
 
-Tips:
+- When using unique names you don't need a large number for the name length, a length of 4 already gives 13 million possibilities.
 
--When using unique names you don't need a large number for the name length, a length of 4 already gives 13 million possibilities.
+- If you want individual classes, packages, or variables not obfuscated you have to use the GUI mode and deselect them.
 
--If you want individual classes, packages, or variables not obfuscated you have to use the GUI mode and deselect them.
+- The more .AS files it has the more it can obfuscate, as it works with references. If you make use of a library and have the source code of it, you should include those .as files to get better obfuscation.
 
--The more .AS files it has the more it can obfuscate, as it works with references. If you make use of a library and have the source code of it, you should include those .as files to get better obfuscation.
-
--The obfuscation will break on dynamically typed fields, always type those things or exclude them from the renaming process.
+- The obfuscation will break on dynamically typed fields, always type those things or exclude them from the renaming process.
 **!!!NOTE!!!** THIS WILL GENERATE RUNTIME ERRORS OTHERWISE!
 
--If you receive an error try running the program with the command line in order to see debug traces and get an error report.
+so change:
+
+	array[0].unsafeCall();
+
+to:
+
+	MyClass( array[0] ).safeCall
+
+- **Local / anymous functions explained:**
+
+Local and anymous functions won't have their variables renamed, this is not a problem as your swf will not store these names. However it may generate name conflicts. Take a look at the following example:
+
+	class A {
+		var a:int, b:int;
+		public function A() {
+			var a:String;
+			a = "a"; //won't be renamed (in nolocalvar mode)
+			this.a = 4; //will be renamed
+			var c = function() {
+				var b:String = "hi"; //!!!WILL BE RENAMED!!!
+			}
+		}
+	}
+Keep in mind that when local variables have the same name as global variables, it is OK as long as these local variables are in a normal function.
+
+- If you receive an error try running the program with the command line in order to see debug traces and get an error report.
 
 ----------
 Updates
 
-12 October 2012:	Make the Obfuscator ignore Anonymous functions instead of terminate.
-
+- 12 October 2012:	Make the Obfuscator ignore Anonymous functions instead of terminate.
+- 14 October 2012:	Added Vector Type safety support.
 
 ------------
 Unsupported:
@@ -79,13 +103,12 @@ Unsupported:
 		Its slow and unhandy to read because of the extra { it creates
 3.	mxml, will not get parsed; only .as files
 		This is an actionscript obfuscator, not a UI obfuscator.
-4.	Local functions, may generate errors
+4.	Local functions and anymous functions, may generate errors
 		there is a chance where there can be collisions with names.
 5.	Dynamically typed members, may generate errors
 		Without a type the variable or function cannot be referenced correctly, look out for warnings when you compile your original code for this.
-6.	Vector object; does not have type safety, may generate errors
-		It would be too tedious to create this just for Vector, Vector is only faster than Array with primitive values mostly and they should not be a problem.
-7.	Global function or field in .as file
+7.	Global function or field in separate .as file (global to the package)
 8.	Possibly more, things I haven't heard of
+
 
 
