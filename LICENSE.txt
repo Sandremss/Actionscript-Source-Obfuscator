@@ -18,6 +18,9 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+For the use and modification of class 'gui.GUI', original source found at:
+
+http://docs.oracle.com/javase/tutorial/displayCode.html?code=http://docs.oracle.com/javase/tutorial/uiswing/examples/components/TreeIconDemo2Project/src/components/TreeIconDemo2.java
 
  Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
  
