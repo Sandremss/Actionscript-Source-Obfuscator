@@ -1,6 +1,7 @@
 package main;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -59,6 +60,12 @@ public class Obfuscate implements IGetClass {
 		if (!file.exists())
 			file.mkdir();
 
+		System.out.println("Default Charset=" + Charset.defaultCharset());
+//		System.setProperty("file.encoding", "Latin-1");
+		System.out.println("file.encoding=" + System.getProperty("file.encoding"));
+		System.out.println("Default Charset=" + Charset.defaultCharset());
+		
+		
 		UniqueStringCreator.setupChars();
 		if (UniqueStringCreator.length == -1)
 			UniqueStringCreator.length = 4;
@@ -103,7 +110,7 @@ public class Obfuscate implements IGetClass {
 			actionScriptClass.resolveAsteriskImports();
 		}
 	}
-	
+
 	/**
 	 * renames all the classes, first checks if there are enough possible names
 	 * in case of unique name request.
@@ -148,7 +155,7 @@ public class Obfuscate implements IGetClass {
 
 		return false;
 	}
-	
+
 	/**
 	 * Makes the physical changes on the classes and writes them.
 	 */
@@ -169,8 +176,6 @@ public class Obfuscate implements IGetClass {
 		}
 	}
 
-
-
 	/**
 	 * Checks whether there are enough possibilities to rename all fields
 	 * 
@@ -190,7 +195,6 @@ public class Obfuscate implements IGetClass {
 		System.out.println("generating: " + space + " unique names for: " + names + " objects");
 		return (names > space);
 	}
-
 
 	/**
 	 * finds all .AS files in the subdirectories of the file, recursively this
@@ -215,7 +219,7 @@ public class Obfuscate implements IGetClass {
 			addClasses(classes, tfile);
 		}
 	}
-	
+
 	private void notEnoughNamesError() {
 		System.out.println("ERROR: Cannot rename variables, there are not enough possibilities to create "
 				+ RenameObjectCounter.getCount() + " names with only " + UniqueStringCreator.length
@@ -225,7 +229,6 @@ public class Obfuscate implements IGetClass {
 		new Scanner(System.in).nextLine();
 		System.exit(0);
 	}
-
 
 	/**
 	 * Translates arguments to settings

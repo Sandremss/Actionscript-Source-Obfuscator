@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 /**
@@ -41,7 +42,12 @@ public class CodeParser {
 		_fileName = file.getPath();
 		FileInputStream inputStream = new FileInputStream(file);
 		DataInputStream dataInput = new DataInputStream(inputStream);
-		_reader = new BufferedReader(new InputStreamReader(dataInput));
+		try {
+			_reader = new BufferedReader(new InputStreamReader(dataInput, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		_lines = 0;
 		_elements = -1;
 		_charIndex = 0;

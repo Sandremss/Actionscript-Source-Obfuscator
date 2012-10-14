@@ -122,6 +122,7 @@ public class RenamingExecuter {
 
 	// TODO fix lazy coding >___>
 	private static int res;
+	private static int ref;
 
 	/**
 	 * Checks for a class, and replaces it with the new class name
@@ -177,8 +178,9 @@ public class RenamingExecuter {
 	public static int getReferences(ActionScriptClass baseType, ActionScriptClass type, ArrayList<String> elements,
 			int i, Variable inFunction, boolean isInChain, String totalChain, IGetClass classManager,
 			String superClassName) {
-		//TODO this is a BIG method and got more bloated over time, needs some refactoring.
-		//TODO could probably need some cleaning too, there is some redundancy
+		// TODO this is a BIG method and got more bloated over time, needs some
+		// refactoring.
+		// TODO could probably need some cleaning too, there is some redundancy
 		String varName = null;
 		String string = null;
 		ActionScriptClass nextType = null;
@@ -247,17 +249,31 @@ public class RenamingExecuter {
 		if (var != null && !var.getName().equals(baseType.getClassName())) {
 			string = var.getName();
 			elements.set(i, string);
-			nextType = classManager.getClass(var.getType());
+
+			// Vector Exception
+			if (var.isVector()) {
+				nextType = checkVector(var, i, elements, classManager, baseType, inFunction, superClassName);
+				if (nextType != null) {
+					//TODO fix lazy coding
+					i = ref;
+				}
+			} else {
+				nextType = classManager.getClass(var.getType());
+			}
+
 		}
 
 		i++;
 		string = elements.get(i);
 
-		if (string.equals("(")) {
+		if (string.equals("(") || string.equals("[")) {
+			//this way arrays with [] won't reset the chain
+			String close = string.equals("(") ? ")" : "]";
 			while (true) {
 				i++;
 				string = elements.get(i);
-				if (string.equals(")")) {
+								
+				if (string.equals(close)) {
 					i++;
 					string = elements.get(i);
 					break;
@@ -277,7 +293,28 @@ public class RenamingExecuter {
 		return i;
 	}
 
-	//Constants to indicate in what phase we are in the class
+	private static ActionScriptClass checkVector(Variable var, int i, ArrayList<String> elements, IGetClass classManager, ActionScriptClass baseType, Variable inFunction, String superClassName) {
+		i++;
+		String next = elements.get(i);
+		System.out.println("point: " + next);
+		if (next.equals("[")) {
+			while (true) {
+				i++;
+				String string = elements.get(i);
+				if (string.equals("]")) {
+					ActionScriptClass out = classManager.getClass(var.getVectorType());
+					//TODO fix lazy Coding
+					ref = i;
+					return out;
+				}
+				i = getReferences(baseType, baseType, elements, i, inFunction, false, "", classManager, superClassName);
+			}
+		}
+		return null;
+
+	}
+
+	// Constants to indicate in what phase we are in the class
 	private static final int STATE_OUTSIDE_PACKAGE = 0;
 	private static final int STATE_IMPORTS = 1;
 	private static final int STATE_INCLASS = 2;
@@ -285,7 +322,9 @@ public class RenamingExecuter {
 	private static final String[] instanceDeclarationKeywords = { "var", "const", "function" };
 
 	/**
-	 * The main function that goes through all the words of the class and makes the physical changes to it.
+	 * The main function that goes through all the words of the class and makes
+	 * the physical changes to it.
+	 * 
 	 * @param elements
 	 * @param caller
 	 * @param classManager

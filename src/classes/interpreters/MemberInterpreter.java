@@ -9,17 +9,16 @@ import data.IAddVariable;
 import data.Variable;
 
 /**
- * This class interprets the parsed words from the {@link CodeParser}, it looks for
- * information that we seek; namely variable names and function names. It will
- * also store local variables and parameters of functions
+ * This class interprets the parsed words from the {@link CodeParser}, it looks
+ * for information that we seek; namely variable names and function names. It
+ * will also store local variables and parameters of functions
  * 
  * @author sander
  * 
  */
 public class MemberInterpreter {
 
-	private static final String[] instanceDeclarationKeywords = { "var",
-			"const", "function" };
+	private static final String[] instanceDeclarationKeywords = { "var", "const", "function" };
 
 	/**
 	 * This function is part of the interpretation phase of the parsing. Since
@@ -55,8 +54,8 @@ public class MemberInterpreter {
 	 *            added to.
 	 * @return A function (with type Variable) to add local variables to.
 	 */
-	public static Variable checkMember(String word, CodeParser parser,
-			ArrayList<String> elements, IAddVariable addVarsTo) {
+	public static Variable checkMember(String word, CodeParser parser, ArrayList<String> elements,
+			IAddVariable addVarsTo) {
 		// if the word is not 'var', 'function', or 'const' there is no member
 		// to be found here
 		if (!isInstanceDeclaration(word))
@@ -64,8 +63,7 @@ public class MemberInterpreter {
 
 		boolean isFunction = word.equals("function");
 
-		String variableName = getOrFail(parser, elements,
-				"instance declaration word " + word + " !");
+		String variableName = getOrFail(parser, elements, "instance declaration word " + word + " !");
 
 		if (isFunction) {
 			return parseFunction(variableName, parser, elements, addVarsTo);
@@ -88,8 +86,7 @@ public class MemberInterpreter {
 	 * @return NULL, only functions have to be stored because of local
 	 *         variables.
 	 */
-	private static Variable parseProperty(String variableName,
-			CodeParser parser, ArrayList<String> elements,
+	private static Variable parseProperty(String variableName, CodeParser parser, ArrayList<String> elements,
 			IAddVariable addVarsTo) {
 		// parseProperty(parser, elements, variableName, var);
 
@@ -120,32 +117,27 @@ public class MemberInterpreter {
 	 * @param addVarsTo
 	 *            The interface in which to store the variables.
 	 */
-	private static void extractVariableSummation(CodeParser parser,
-			ArrayList<String> elements, IAddVariable addVarsTo) {
+	private static void extractVariableSummation(CodeParser parser, ArrayList<String> elements, IAddVariable addVarsTo) {
 		String variableName;
 		int bracketChain = 0;
 		while (true) {
 
 			variableName = getOrFail(parser, "parsing variables in chain");
-			if (variableName.equals(";") || isReservedWord(variableName)
-					|| bracketChain < 0)
+			if (variableName.equals(";") || isReservedWord(variableName) || bracketChain < 0)
 				break;
 
 			// var barry:Number = addNumbers(3, 12, 9, 1), b = 0;
 			// in between the brackets we don't want the numbers to be
 			// interpreted as variables
-			bracketChain = increaseDecrease(variableName, bracketChain, "(",
-					")");
+			bracketChain = increaseDecrease(variableName, bracketChain, "(", ")");
 
 			// var aap:Array = [barry, 3, "hi"]; we don't want what is in
 			// between to be interpreted as variables
-			bracketChain = increaseDecrease(variableName, bracketChain, "[",
-					"]");
+			bracketChain = increaseDecrease(variableName, bracketChain, "[", "]");
 			elements.add(variableName);
 			if (variableName.equals(",") && bracketChain == 0) {
-				variableName = getOrFail(parser, elements,
-						"parsing variables in chain");
-				if(variableName.equals("...")) {
+				variableName = getOrFail(parser, elements, "parsing variables in chain");
+				if (variableName.equals("...")) {
 					return;
 				}
 				Variable nextVariable = new Variable(variableName);
@@ -180,8 +172,7 @@ public class MemberInterpreter {
 	 *            The string in which case to decrease 1.
 	 * @return the new chain index
 	 */
-	private static int increaseDecrease(String string, int chain, String up,
-			String down) {
+	private static int increaseDecrease(String string, int chain, String up, String down) {
 		if (string.equals(up)) {
 			chain++;
 		} else if (string.equals(down)) {
@@ -207,18 +198,39 @@ public class MemberInterpreter {
 	 * @param member
 	 *            The member in which to store the potential type.
 	 */
-	private static void checkType(String memberName, CodeParser parser,
-			ArrayList<String> elements, Variable member) {
-		String expectColon = getOrFail(parser, "function " + memberName
-				+ ", expected :");
+	private static void checkType(String memberName, CodeParser parser, ArrayList<String> elements, Variable member) {
+		String expectColon = getOrFail(parser, "function " + memberName + ", expected :");
 		if (expectColon.equals(":")) {
 			elements.add(expectColon);
 			String type = ClassParseUtils.getDotList(parser, elements);
 			member.SetType(type);
+
+			// Exception for Vector objects
+			checkVector(parser, elements, member, type);
+
 		} else {
 			member.SetType("*");
 			parser.stepBack();
 		}
+	}
+
+	/**
+	 * Checks if the variable is a Vector object, if so it stores the extra
+	 * information needed to obfuscate with type safety of the Vector object.
+	 * 
+	 * @param parser
+	 * @param elements
+	 * @param member
+	 * @param type
+	 */
+	private static void checkVector(CodeParser parser, ArrayList<String> elements, Variable member, String type) {
+		System.out.println("check vector: " + type);
+		if (type.equals("Vector.<")) {
+			System.out.println("type is a vector!");
+			String vectorType = getOrFail(parser, elements, "Vector.<");
+			member.setVectorType(vectorType);
+		}
+
 	}
 
 	/**
@@ -238,14 +250,12 @@ public class MemberInterpreter {
 	 *            The interface to add the function to
 	 * @return the resulting function
 	 */
-	private static Variable parseFunction(String functionName,
-			CodeParser parser, ArrayList<String> elements,
+	private static Variable parseFunction(String functionName, CodeParser parser, ArrayList<String> elements,
 			IAddVariable addVarsTo) {
 
 		// ignore getters and setters
 		if (functionName.equals("get") || functionName.equals("set")) {
-			functionName = getOrFail(parser, elements,
-					"getter / setter function");
+			functionName = getOrFail(parser, elements, "getter / setter function");
 		}
 
 		boolean isAnonymous = false;
@@ -257,23 +267,20 @@ public class MemberInterpreter {
 		}
 
 		Variable function = null;
-		
-		if(isAnonymous){
+
+		if (isAnonymous) {
 			function = new Variable("");
 			function.setAnonymous();
-		}
-		else
+		} else
 			function = new Variable(functionName);
-		
+
 		// store whether this function overrides
 		function.setOverride(occursBefore(elements, "override", 5));
 
 		// function definition should be followed by a '('
-		String validAfterFunction = getOrFail(parser, elements,
-				"function definition! " + functionName);
+		String validAfterFunction = getOrFail(parser, elements, "function definition! " + functionName);
 		if (!validAfterFunction.equals("("))
-			rageQuit("Function: " + functionName + " is not followed by '('",
-					parser);
+			rageQuit("Function: " + functionName + " is not followed by '('", parser);
 
 		// store arguments
 		checkFunctionParameters(parser, elements, function);
@@ -299,14 +306,12 @@ public class MemberInterpreter {
 	 * @param function
 	 *            The function which to add parameters to.
 	 */
-	private static void checkFunctionParameters(CodeParser parser,
-			ArrayList<String> elements, Variable function) {
-		String argument = getOrFail(parser, elements,
-				"function arguments parse!");
+	private static void checkFunctionParameters(CodeParser parser, ArrayList<String> elements, Variable function) {
+		String argument = getOrFail(parser, elements, "function arguments parse!");
 		// if its a function startGame(), there are no parameters!
 		if (argument.equals(")"))
 			return;
-		if(argument.equals("...")){
+		if (argument.equals("...")) {
 			return;
 		}
 		Variable parameterVariable = new Variable(argument);
@@ -337,8 +342,7 @@ public class MemberInterpreter {
 	 *            An integer representing how far back we should look
 	 * @return a boolean value representing if there was match
 	 */
-	private static boolean occursBefore(ArrayList<String> elements,
-			String stringToSearch, int howFarBack) {
+	private static boolean occursBefore(ArrayList<String> elements, String stringToSearch, int howFarBack) {
 		int a = elements.size() - 1;
 		for (int i = 0; i < howFarBack && elements.size() > i; i++) {
 			String possibleOverride = elements.get(a - i);

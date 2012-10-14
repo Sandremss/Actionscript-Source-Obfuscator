@@ -14,10 +14,12 @@ public class Variable implements IAddVariable, IRenameLockable {
 	private String _variableName;
 	private String _oldName;
 	private String _type;
+	private String _vectorType;
 	private ArrayList<Variable> _argVars;
 	private boolean _renamed;
 	private boolean _isOverride;
 	private boolean _anonymous = false;
+	private boolean _isVector = false;
 
 	public Variable(String variableName) {
 		RenameObjectCounter.increaseCount(1);
@@ -115,5 +117,23 @@ public class Variable implements IAddVariable, IRenameLockable {
 
 	public boolean isAnomynous() {
 		return _anonymous;
+	}
+
+	public String getVectorType() {
+		if(_vectorType == null) {
+			System.out.println("vector is not typed! error!");
+			System.exit(0);
+		}
+		return _vectorType;
+	}
+
+	public void setVectorType(String _vectorType) {
+		System.out.println("setting Vector type: " + _vectorType);
+		this._vectorType = _vectorType;
+		_isVector = true;
+	}
+	
+	public boolean isVector() {
+		return _isVector;
 	}
 }

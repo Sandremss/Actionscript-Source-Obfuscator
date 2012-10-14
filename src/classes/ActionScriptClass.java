@@ -341,7 +341,7 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 					for (int j = 0; j < tabCount; j++) {
 						string = "\t" + string;
 					}
-					string = "\n" + string;
+					string = System.getProperty("line.separator") + string;
 				}
 
 				if (string.contains("{")) {

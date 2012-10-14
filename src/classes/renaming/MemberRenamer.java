@@ -41,7 +41,9 @@ public class MemberRenamer {
 			ArrayList<Variable> locals = variable.getLocalVariables();
 			for (Variable localVar : locals) {
 				localVar.SetType(asClass.getFullType(localVar.getType()));
+				checkVectorException(localVar, asClass);
 			}
+			checkVectorException(variable, asClass);
 		}
 
 		ActionScriptClass superClass = model.getClass(asClass.getFullType(asClass.getSuperClassName()));
@@ -108,7 +110,7 @@ public class MemberRenamer {
 			String newName = null;
 
 			if (!variable.getName().equals(asClass.getClassName())) {
-				//loop used for incremental renaming only
+				// loop used for incremental renaming only
 				while (newName == null || takenNames.indexOf(newName) >= 0)
 					newName = renamePrefix + i++;
 				if (ObfuscationSettings.uniqueNames())
@@ -135,6 +137,24 @@ public class MemberRenamer {
 		}
 
 		return i;
+	}
+
+	/**
+	 * If the variable is a Vector, it will get the full type of the full type
+	 * of the type of the vector, and store it back in there.
+	 * 
+	 * @param variable
+	 * @param asClass
+	 */
+	private static void checkVectorException(Variable variable, IClassPropertyGetterSetter asClass) {
+		// This is acually sort of a bug... a type can be something like:
+		// var a : flash.display.Sprite
+		// and it has to find the complete name with dots. As far as I know is
+		// Vector the only class that can have a '.' directly after it so we'll
+		// use this to our advantage in this case.
+		if (variable.getType().equals("Vector.<")) {
+			variable.setVectorType(asClass.getFullType(variable.getVectorType()));
+		}
 	}
 
 	/**
