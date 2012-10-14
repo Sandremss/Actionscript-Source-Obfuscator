@@ -23,6 +23,14 @@ Double click (Windows)
 
 Run from Terminal:
 
+**First go to the Directory where Obfuscator.jar is at!!**
+For example if your Obfuscator.jar is at /home/username/Downloads/obfustest/ you should run:
+
+	$ cd /home/username/Downloads/obfustest/
+
+When you are at the right directory you can run the commands below.
+
+
 GUI Mode:
 
 	$ java -jar Obfuscator.jar 
@@ -33,12 +41,12 @@ Terminal Mode:
 
 Arguments:
 
- -nolocal | don't obfuscate local variables
- -nopackages | don't obfuscate packages
- -noclasses | don't obfuscate class names
- -uniquenames | give every field an unique name
- -namelength <length> | the length of each unique name, you need to also use -uniquenames
- -help | display available commands
+1. -nolocal | don't obfuscate local variables
+2. -nopackages | don't obfuscate packages
+3. -noclasses | don't obfuscate class names
+4. -uniquenames | give every field an unique name
+5. -namelength <length> | the length of each unique name, you need to also use -uniquenames
+6. -help | display available commands
 
 
 
@@ -55,24 +63,29 @@ Tips:
 
 -If you receive an error try running the program with the command line in order to see debug traces and get an error report.
 
+----------
+Updates
+
+12 October 2012:	Make the Obfuscator ignore Anonymous functions instead of terminate.
+
+
 ------------
 Unsupported:
 ------------
 
-1.	Anonymous Functions, will terminate the program
-		They're slower and have no architectual use, if you want to manually obfuscate your program: by all means, you won't need this obfuscator =).
-2.	Namespaces, will generate errors
+1.	Namespaces, will generate errors
 		They're not too usefull.
-3.	The 'with' statement, will generate errors
+2.	The 'with' statement, will generate errors
 		Its slow and unhandy to read because of the extra { it creates
-4.	mxml, will not get parsed; only .as files
+3.	mxml, will not get parsed; only .as files
 		This is an actionscript obfuscator, not a UI obfuscator.
-5.	Local functions, may generate errors
+4.	Local functions, may generate errors
 		there is a chance where there can be collisions with names.
-6.	Dynamically typed members, may generate errors
+5.	Dynamically typed members, may generate errors
 		Without a type the variable or function cannot be referenced correctly, look out for warnings when you compile your original code for this.
-7.	Vector object; does not have type safety, may generate errors
+6.	Vector object; does not have type safety, may generate errors
 		It would be too tedious to create this just for Vector, Vector is only faster than Array with primitive values mostly and they should not be a problem.
-8.	Global function or field in .as file
-9.	Possibly more, things I haven't heard of
+7.	Global function or field in .as file
+8.	Possibly more, things I haven't heard of
+
 
