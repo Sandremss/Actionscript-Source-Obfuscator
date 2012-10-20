@@ -108,7 +108,7 @@ Unsupported:
 5.	Dynamically typed members, may generate errors
 		Without a type the variable or function cannot be referenced correctly, look out for warnings when you compile your original code for this.
 7.	Global function or field in separate .as file (global to the package)
-8.	Possibly more, things I haven't heard of
+8.	Reflection, variable names will get changed.
 
 
 
