@@ -2,6 +2,8 @@ package data;
 
 import java.util.ArrayList;
 
+import main.ObfuscationSettings;
+
 /**
  * This class holds a Variable or a Function, it can also have local variables
  * if it is a function.
@@ -27,7 +29,14 @@ public class Variable implements IAddVariable, IRenameLockable {
 			System.err.println("Variable with null in constructor!!!");
 			System.exit(0);
 		}
-		_renamed = false;
+		if (ObfuscationSettings.isIgnoredMemberName(variableName))
+		{
+			_renamed = true;
+		}
+		else
+		{
+			_renamed = false;
+		}
 		this._variableName = variableName;
 		_argVars = new ArrayList<Variable>();
 		_oldName = variableName;
@@ -37,7 +46,7 @@ public class Variable implements IAddVariable, IRenameLockable {
 		return _variableName;
 	}
 
-	public void rename(String newName) {
+	public void rename(String newName) {		
 		if (newName == null) {
 			System.err.println("RENAMED TO NULL NAME!!, " + _oldName);
 			System.exit(0);

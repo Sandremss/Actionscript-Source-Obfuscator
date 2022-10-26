@@ -78,10 +78,35 @@ public class MemberRenamer {
 			for (Variable variable : superClass.getVariables()) {
 				takenNames.add(variable.getName());
 			}
+			
 		ArrayList<Variable> overrideFunctions = asClass.getOverrideFunctions();
 		if (superClass != null) {
 			for (Variable override : overrideFunctions) {
-				override.rename(superClass.askVariable(override.getOldName()).getName());
+
+				String oldName = override.getOldName();
+				if (oldName == null)
+				{
+					continue;
+				}
+
+				/* DuongTC
+				String dNewname = UniqueStringCreator.getDictUniqueName(oldName);
+
+				if (dNewname != null)
+				{
+					override.rename(dNewname);
+					takenNames.add(override.getName());
+
+					continue;
+				}
+				*/
+
+				Variable valr = superClass.askVariable(oldName);
+				if (valr == null)
+				{
+					continue;
+				}
+				override.rename(valr.getName());
 				takenNames.add(override.getName());
 			}
 		} else {
@@ -114,22 +139,25 @@ public class MemberRenamer {
 				while (newName == null || takenNames.indexOf(newName) >= 0)
 					newName = renamePrefix + i++;
 				if (ObfuscationSettings.uniqueNames())
-					variable.rename(UniqueStringCreator.getUniqueName(RenameType.VARIABLE));
+					variable.rename(UniqueStringCreator.getUniqueName(RenameType.VARIABLE, variable.getName()));
 				else
 					variable.rename(newName);
 			}
-
 		}
 
 		if (!ObfuscationSettings.doLocalVars())
+		{
 			return i;
+		}
 
 		for (Variable variable : members) {
 			int p = 0;
 			for (Variable local : variable.getLocalVariables()) {
 
 				if (ObfuscationSettings.uniqueNames())
-					local.rename(UniqueStringCreator.getUniqueName(RenameType.VARIABLE));
+				{					
+					local.rename(UniqueStringCreator.getUniqueName(RenameType.LOCALVARIABLE, local.getName()));
+				}
 				else
 					local.rename("l" + p);
 				p++;

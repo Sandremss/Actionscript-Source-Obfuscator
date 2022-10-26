@@ -74,6 +74,14 @@ public class ClassParseInterpreter {
 			_translationMap.put(var.getOldName(), var);
 		}
 
+		if (asClass.getClassName() != null)
+		{
+			Variable variable = new Variable("super");
+			variable.SetType(asClass.getFullType(asClass.getClassName()));		
+	
+			_translationMap.put("super", variable);
+		}
+
 		asClass.setNewLines(parser.getNewLineList());
 		asClass.setSpaces(parser.getSpaceList());
 	}

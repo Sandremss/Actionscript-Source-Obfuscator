@@ -3,6 +3,10 @@ package classes.renaming;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.FileWriter;
 
 /**
  * This class creates unique strings used to name variables
@@ -12,6 +16,10 @@ import java.util.HashMap;
 public class UniqueStringCreator {
 
 	private static HashMap<String, Boolean> usedWordsMap;
+	
+	private static Map<String, String> renamedDict;
+	private static Map<String, String> renamedClassDict;
+	private static Map<String, String> renamedPackageDict;
 	
 	//lol lazy: http://stackoverflow.com/questions/2578233/how-do-i-get-the-set-of-all-letters-in-java-clojure
 	private static String getAllLetters(String charsetName)
@@ -52,6 +60,10 @@ public class UniqueStringCreator {
 		validCharPackage = validCharClass;
 		validCharVariable = (allLetters + allNumbers + "_$").toCharArray();
 		usedWordsMap = new HashMap<String, Boolean>();
+
+		renamedDict = new HashMap<String, String>();
+		renamedClassDict = new HashMap<String, String>();
+		renamedPackageDict = new HashMap<String, String>();
 	}
 	
 	/**gets the posibilities based on the length of the variable name.
@@ -72,31 +84,45 @@ public class UniqueStringCreator {
 		return out;
 	}
 	
+	public static String getDictUniqueName(String oldname){
+		return renamedDict.getOrDefault(oldname.toLowerCase(), null);
+	}
+
 	/**Returns a unique name.
 	 * 
 	 * @param rename the type of name that is wanted
 	 * @return the name
 	 */
-	public static String getUniqueName(RenameType rename) {
+	public static String getUniqueName(RenameType rename, String oldname) {
 		char[] first = null;
 		char[] norm = null;
-		
+
+		if (rename == RenameType.VARIABLE)
+		{
+			String indist = renamedDict.getOrDefault(oldname.toLowerCase(), null);
+			if (indist != null)
+			{
+				return indist;
+			}
+		}
+	
 		switch (rename) {
-		case VARIABLE:
-			first = firstCharValidVariable;
-			norm = validCharVariable;
-			break;
-		case CLASSNAME:
-			first = firstCharValidClass;
-			norm = validCharClass;
-			break;
-		case PACKAGENAME:
-			first = firstCharValidPackage;
-			norm = validCharPackage;
-			break;
-		default:
-			System.out.println("this is impossible! HHAHAHAHAHAHAH");
-			break;
+			case VARIABLE:
+			case LOCALVARIABLE:
+				first = firstCharValidVariable;
+				norm = validCharVariable;
+				break;
+			case CLASSNAME:
+				first = firstCharValidClass;
+				norm = validCharClass;
+				break;
+			case PACKAGENAME:
+				first = firstCharValidPackage;
+				norm = validCharPackage;
+				break;
+			default:
+				System.out.println("this is impossible! HHAHAHAHAHAHAH");
+				break;
 		}
 		
 		char[] out = new char[length];
@@ -111,10 +137,45 @@ public class UniqueStringCreator {
 		}
 		else{
 			//collision detected TODO log?
-			return getUniqueName(rename);
+			return getUniqueName(rename, oldname);
 		}
 		
-		return new String(out);
-		
+		String strOut = new String(out);
+
+		renamedDict.put(new String(oldname), strOut);
+
+		switch (rename) {
+			case VARIABLE:
+			case LOCALVARIABLE:
+				break;
+			case CLASSNAME:
+				renamedClassDict.put(oldname, strOut);
+				break;
+			case PACKAGENAME:
+				renamedPackageDict.put(oldname, strOut);
+				break;
+			default:
+				break;
+		}
+
+		return strOut;
+	}
+
+	public static void resetDict(){
+		//renamedDict.clear();
+	}
+
+	public static void writeDistToFile(){
+		try {
+			FileWriter writer = new FileWriter("output.txt"); 
+
+			for(String str: renamedDict.keySet()) {
+			  writer.write(str + "\t" + renamedDict.get(str) + System.lineSeparator());
+			}
+			writer.close();		
+				
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 }

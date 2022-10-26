@@ -71,8 +71,8 @@ public class Obfuscate implements IGetClass {
 			UniqueStringCreator.length = 4;
 		if (!isGUI) {
 			System.out.println("Welcome to AS Obfuscator!, put your files in the subfolder ./in");
-			System.out.println("To start press ENTER.....");
-			new Scanner(System.in).nextLine(); // block until new line so user
+			//System.out.println("To start press ENTER.....");
+			//new Scanner(System.in).nextLine(); // block until new line so user
 			// can put stuff in ./in
 		}
 
@@ -86,6 +86,8 @@ public class Obfuscate implements IGetClass {
 		}
 
 		makeChangeNameAndOutput();
+		
+		UniqueStringCreator.writeDistToFile();
 	}
 
 	/**
@@ -131,15 +133,23 @@ public class Obfuscate implements IGetClass {
 			if (interF.isInterFace()) {
 				it.remove();
 				interfaces.add(interF);
+
 				if (ObfuscationSettings.renameClasses())
 					interF.renameClassName(classIndex);
-				interfaceIndex = interF.renameVariables(interfaceIndex);
+
+				// if (ObfuscationSettings.doLocalVars())
+				// 	interfaceIndex = interF.renameVariables(interfaceIndex);
 			}
 		}
 
 		// now the normal classes can do the same
 		for (ActionScriptClass actionScriptClass : classes) {
-			actionScriptClass.renameVariables();
+			if (actionScriptClass.getClassName() == null)
+			 	continue;
+
+			// if (ObfuscationSettings.doLocalVars())
+			// 	actionScriptClass.renameVariables();			
+
 			if (ObfuscationSettings.renameClasses())
 				classIndex = actionScriptClass.renameClassName(classIndex);
 		}
@@ -149,7 +159,7 @@ public class Obfuscate implements IGetClass {
 		// rename package names
 		int packageIndex = 0;
 		for (PackageAS packageAS : manager.getPackages()) {
-			if (ObfuscationSettings.renamePackages())
+			if (ObfuscationSettings.renamePackages() && packageAS.getName().length() > 0)
 				packageIndex = packageAS.renamePackage(packageIndex);
 		}
 
@@ -171,7 +181,7 @@ public class Obfuscate implements IGetClass {
 		if (!out.exists())
 			out.mkdirs();
 
-		for (ActionScriptClass actionScriptClass : classes) {
+		for (ActionScriptClass actionScriptClass : classes) {			
 			actionScriptClass.outClass(out);
 		}
 	}
@@ -241,9 +251,9 @@ public class Obfuscate implements IGetClass {
 			System.out.println("-nolocal | don't obfuscate local variables");
 			System.out.println("-nopackages | don't obfuscate packages");
 			System.out.println("-noclasses | don't obfuscate class names");
-			System.out.println("-uniquenames | give every field an unique name");
+			System.out.println("-nouniquenames | don't give every field an unique name");
 			System.out
-					.println("-namelength <length> | the length of each unique name, you need to also use -uniquenames");
+					.println("-namelength <length> | the length of each unique name, you need to also NOT use -uniquenames");
 			System.out.println("-help | display this message");
 			System.out.println("press ENTER to exit");
 			new Scanner(System.in).nextLine();
@@ -253,12 +263,12 @@ public class Obfuscate implements IGetClass {
 		int indexOf = a.indexOf("-namelength");
 		if (indexOf >= 0) {
 			System.out.println("found namelength argument!");
-			if (args.length <= indexOf + 1) {
-				System.out.println("missing length argument after -namelength argument!");
-				System.out.println("Press ENTER to exit");
-				new Scanner(System.in).nextLine();
-				System.exit(0);
-			}
+			// if (args.length <= indexOf + 1) {
+			// 	System.out.println("missing length argument after -namelength argument!");
+			// 	System.out.println("Press ENTER to exit");
+			// 	new Scanner(System.in).nextLine();
+			// 	System.exit(0);
+			// }
 			try {
 				int length = Integer.parseInt(args[indexOf + 1]);
 				UniqueStringCreator.length = length;
@@ -270,11 +280,15 @@ public class Obfuscate implements IGetClass {
 				System.exit(0);
 			}
 		}
+		else
+		{
+			UniqueStringCreator.length = 10;
+		}
 
-		boolean localVars = a.indexOf("-nolocal") == -1;
+		boolean localVars = false;// a.indexOf("-nolocal") == -1;
 		boolean packages = a.indexOf("-nopackages") == -1;
 		boolean classNames = a.indexOf("-noclasses") == -1;
-		boolean uniqueRenaming = a.indexOf("-uniquenames") >= 0;
+		boolean uniqueRenaming = a.indexOf("-nouniquenames") == -1;
 		System.out.println("unique names!: " + uniqueRenaming);
 		ObfuscationSettings.initSettings(new ObfuscationSettings(localVars, packages, classNames, uniqueRenaming));
 	}
