@@ -137,8 +137,8 @@ public class Obfuscate implements IGetClass {
 				if (ObfuscationSettings.renameClasses())
 					interF.renameClassName(classIndex);
 
-				// if (ObfuscationSettings.doLocalVars())
-				// 	interfaceIndex = interF.renameVariables(interfaceIndex);
+				if (ObfuscationSettings.doLocalVars())
+					interfaceIndex = interF.renameVariables(interfaceIndex);
 			}
 		}
 
@@ -147,8 +147,8 @@ public class Obfuscate implements IGetClass {
 			if (actionScriptClass.getClassName() == null)
 			 	continue;
 
-			// if (ObfuscationSettings.doLocalVars())
-			// 	actionScriptClass.renameVariables();			
+			if (ObfuscationSettings.doLocalVars())
+				actionScriptClass.renameVariables();
 
 			if (ObfuscationSettings.renameClasses())
 				classIndex = actionScriptClass.renameClassName(classIndex);
@@ -285,7 +285,7 @@ public class Obfuscate implements IGetClass {
 			UniqueStringCreator.length = 10;
 		}
 
-		boolean localVars = false;// a.indexOf("-nolocal") == -1;
+		boolean localVars = false; //a.indexOf("-nolocal") == -1;
 		boolean packages = a.indexOf("-nopackages") == -1;
 		boolean classNames = a.indexOf("-noclasses") == -1;
 		boolean uniqueRenaming = a.indexOf("-nouniquenames") == -1;

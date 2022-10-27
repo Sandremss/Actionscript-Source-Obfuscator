@@ -449,6 +449,11 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 			//_renamed = false;
 			_classNameRenamed = true;
 		}
+
+		if (ObfuscationSettings.isIgnoredMemberInClass(className))
+		{
+			_renamed = true;
+		}
 	}
 
 	@Override
