@@ -90,6 +90,15 @@ Keep in mind that when local variables have the same name as global variables, i
 ----------
 Updates
 
+- 27 October 2022:  
+					+ Support Namespaces, support file without having any class
+					+ Support regular expression
+					+ Support load ignore list from:
+						ignoreclass.txt: All class in this file will be keep it's name
+						ignorepackage.txt: All packages in this file will be keep as is
+						ignorerenamememberinclass.txt: All member (methods, properties, local variable) will be keep as is
+						ignorevarname.txt:	All methods, properties, local variable name in this file will be keep as is
+					+ Fix many other errors
 - 12 October 2012:	Make the Obfuscator ignore Anonymous functions instead of terminate.
 - 14 October 2012:	Added Vector Type safety support.
 
@@ -97,18 +106,16 @@ Updates
 Unsupported:
 ------------
 
-1.	Namespaces, will generate errors
-		They're not too usefull.
-2.	The 'with' statement, will generate errors
+1.	The 'with' statement, will generate errors
 		Its slow and unhandy to read because of the extra { it creates
-3.	mxml, will not get parsed; only .as files
+2.	mxml, will not get parsed; only .as files
 		This is an actionscript obfuscator, not a UI obfuscator.
-4.	Local functions and anymous functions, may generate errors
+3.	Local functions and anymous functions, may generate errors
 		there is a chance where there can be collisions with names.
-5.	Dynamically typed members, may generate errors
+4.	Dynamically typed members, may generate errors
 		Without a type the variable or function cannot be referenced correctly, look out for warnings when you compile your original code for this.
-7.	Global function or field in separate .as file (global to the package)
-8.	Reflection, variable names will get changed.
+5.	Global function or field in separate .as file (global to the package)
+6.	Reflection, variable names will get changed.
 
 
 
