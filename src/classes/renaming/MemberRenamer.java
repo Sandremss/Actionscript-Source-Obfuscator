@@ -18,6 +18,25 @@ import data.Variable;
  */
 public class MemberRenamer {
 
+	private static ArrayList<String> takenNames;
+
+	public static void setTypeAllMembers(int index, ArrayList<Variable> members, IClassPropertyGetterSetter asClass,
+			IGetClass model) {
+		// first get the full path of each type on each variable, for example
+		// Sprite to flash.display.Sprite
+		for (Variable variable : members) {
+			variable.SetType(asClass.getFullType(variable.getType()));
+			ArrayList<Variable> locals = variable.getLocalVariables();
+			for (Variable localVar : locals) {
+				localVar.SetType(asClass.getFullType(localVar.getType()));
+				checkVectorException(localVar, asClass);
+			}
+			checkVectorException(variable, asClass);
+		}
+
+		takenNames = new ArrayList<String>();
+
+	}
 	/**
 	 * Renames all the members of a class.
 	 * 
@@ -34,17 +53,6 @@ public class MemberRenamer {
 	 */
 	public static int renameAllMembers(int index, ArrayList<Variable> members, IClassPropertyGetterSetter asClass,
 			IGetClass model) {
-		// first get the full path of each type on each variable, for example
-		// Sprite to flash.display.Sprite
-		for (Variable variable : members) {
-			variable.SetType(asClass.getFullType(variable.getType()));
-			ArrayList<Variable> locals = variable.getLocalVariables();
-			for (Variable localVar : locals) {
-				localVar.SetType(asClass.getFullType(localVar.getType()));
-				checkVectorException(localVar, asClass);
-			}
-			checkVectorException(variable, asClass);
-		}
 
 		ActionScriptClass superClass = model.getClass(asClass.getFullType(asClass.getSuperClassName()));
 
@@ -58,12 +66,10 @@ public class MemberRenamer {
 		for (String implemented : asClass.getInterfaces()) {
 			ActionScriptClass myInterface = model.getClass(asClass.getFullType(implemented));
 			if (myInterface == null)
-				rageQuit("Interal error, Interface " + implemented + " is null in " + asClass.getPackageName() + "."
-						+ asClass.getClassName());
+				rageQuit("Interal error, Interface " + implemented + " is null in " + asClass.getPackageName() + "." + asClass.getClassName());
 			myInterface.getPreRenamed(preRenamed);
 		}
 
-		ArrayList<String> takenNames = new ArrayList<String>();
 
 		HashMap<String, Variable> translationMap = asClass.getTranslationMap();
 
@@ -75,13 +81,30 @@ public class MemberRenamer {
 			}
 		}
 		if (superClass != null)
+		{
 			for (Variable variable : superClass.getVariables()) {
 				takenNames.add(variable.getName());
 			}
+		}
+
+			
+		//Rename for overrideFunctions
 		ArrayList<Variable> overrideFunctions = asClass.getOverrideFunctions();
 		if (superClass != null) {
 			for (Variable override : overrideFunctions) {
-				override.rename(superClass.askVariable(override.getOldName()).getName());
+
+				String oldName = override.getOldName();
+				if (oldName == null)
+				{
+					continue;
+				}
+
+				Variable valr = superClass.askVariable(oldName);
+				if (valr == null)
+				{
+					continue;
+				}
+				override.rename(valr.getName());
 				takenNames.add(override.getName());
 			}
 		} else {
@@ -105,7 +128,12 @@ public class MemberRenamer {
 
 		int i = index;
 		for (Variable variable : members) {
-			if (variable.isRenamed())
+			if (
+				variable.isRenamed() 
+				|| variable.isStatic()
+				|| variable.isPrivated()
+				|| (variable.isProtected() && variable.isVar())
+				)
 				continue;
 			String newName = null;
 
@@ -114,22 +142,55 @@ public class MemberRenamer {
 				while (newName == null || takenNames.indexOf(newName) >= 0)
 					newName = renamePrefix + i++;
 				if (ObfuscationSettings.uniqueNames())
-					variable.rename(UniqueStringCreator.getUniqueName(RenameType.VARIABLE));
+					variable.rename(UniqueStringCreator.getUniqueName(RenameType.VARIABLE, variable.getName()));
 				else
 					variable.rename(newName);
 			}
-
 		}
 
+		return i;
+	}
+	
+	public static int renameAllLocalVars(int index, ArrayList<Variable> members, IClassPropertyGetterSetter asClass,
+		IGetClass model) {
+
 		if (!ObfuscationSettings.doLocalVars())
-			return i;
+		{
+			return index;
+		}
+
+		String renamePrefix = (asClass.isInterFace() ? "i" : "_");
+
+		int i = index;
+		for (Variable variable : members) {
+			if (variable.isRenamed() || variable.isStatic())
+				continue;
+
+			if (!(variable.isPrivated() || (variable.isProtected() && variable.isVar())))
+				continue;
+	
+				
+			String newName = null;
+
+			if (!variable.getName().equals(asClass.getClassName())) {
+				// loop used for incremental renaming only
+				while (newName == null || takenNames.indexOf(newName) >= 0)
+					newName = renamePrefix + i++;
+				if (ObfuscationSettings.uniqueNames())
+					variable.rename(UniqueStringCreator.getUniqueName(RenameType.VARIABLE, variable.getName()));
+				else
+					variable.rename(newName);
+			}
+		}
 
 		for (Variable variable : members) {
 			int p = 0;
 			for (Variable local : variable.getLocalVariables()) {
 
 				if (ObfuscationSettings.uniqueNames())
-					local.rename(UniqueStringCreator.getUniqueName(RenameType.VARIABLE));
+				{					
+					local.rename(UniqueStringCreator.getUniqueName(RenameType.LOCALVARIABLE, local.getName()));
+				}
 				else
 					local.rename("l" + p);
 				p++;

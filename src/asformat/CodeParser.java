@@ -40,6 +40,7 @@ public class CodeParser {
 
 	public CodeParser(File file) throws FileNotFoundException {
 		_fileName = file.getPath();
+		System.out.println("Processing file " + _fileName);
 		FileInputStream inputStream = new FileInputStream(file);
 		DataInputStream dataInput = new DataInputStream(inputStream);
 		try {

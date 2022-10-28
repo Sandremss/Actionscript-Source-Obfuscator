@@ -196,7 +196,9 @@ public class RenamingExecuter {
 		Variable var = null;
 		// TODO make check if superclass == null better!
 		if (varName.equals("super") && classManager.getClass(baseType.getFullType(superClassName)) != null) {
-			var = classManager.getClass(baseType.getFullType(superClassName)).askVariable(varName);
+			var = classManager.getClass(baseType.getFullType(superClassName)).askVariable("super");
+			var.lockRename();
+			//var = classManager.getClass(baseType.getFullType(superClassName));
 		}
 
 		if (type != null && var == null && isInChain) {
@@ -264,6 +266,12 @@ public class RenamingExecuter {
 		}
 
 		i++;
+		if (i >= elements.size())
+		{
+			//System.out.println("Something wrong with the file");
+			i--;
+			return i;
+		}
 		string = elements.get(i);
 
 		if (string.equals("(") || string.equals("[")) {
@@ -296,7 +304,7 @@ public class RenamingExecuter {
 	private static ActionScriptClass checkVector(Variable var, int i, ArrayList<String> elements, IGetClass classManager, ActionScriptClass baseType, Variable inFunction, String superClassName) {
 		i++;
 		String next = elements.get(i);
-		System.out.println("point: " + next);
+		//System.out.println("point: " + next);
 		if (next.equals("[")) {
 			while (true) {
 				i++;

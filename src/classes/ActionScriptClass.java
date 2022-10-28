@@ -19,6 +19,8 @@ import data.IAddVariable;
 import data.IRenameLockable;
 import data.RenameObjectCounter;
 import data.Variable;
+import java.util.Random;
+import java.io.File;
 
 /**
  * Stores all the data that is to be stored on an Actionscript class. Also calls
@@ -125,6 +127,8 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 		_translationMap = new HashMap<String, Variable>();
 		_importMap = new HashMap<String, String>();
 		_asteriskImports = new ArrayList<String>();
+		//_renamed = true;
+		//_classNameRenamed = true;
 	}
 
 	/**
@@ -167,9 +171,16 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 			return i;
 		}
 		if (ObfuscationSettings.uniqueNames())
-			_newName = UniqueStringCreator.getUniqueName(RenameType.CLASSNAME);
+			_newName = UniqueStringCreator.getUniqueName(RenameType.CLASSNAME, this.getClassName());
 		else
-			_newName = "C" + i++;
+		{
+			Random rand = new Random();
+			i += rand.nextInt(10);
+			_newName = "C" + i;
+		}
+
+		lockRename();
+			
 		return i;
 	}
 
@@ -209,7 +220,18 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 	public int renameVariables(int index) {
 		if (_renamed)
 			return index;
-		int i = MemberRenamer.renameAllMembers(index, _members, this, _classManager);
+
+		int i = index;
+
+		MemberRenamer.setTypeAllMembers(index, _members, this, _classManager);
+		
+		if (!ObfuscationSettings.isIgnoredMemberInClass(this._className))
+		{
+			i = MemberRenamer.renameAllMembers(index, _members, this, _classManager);
+		}
+
+		i = MemberRenamer.renameAllLocalVars(i, _members, this, _classManager);
+		
 		_renamed = true;
 		return i;
 	}
@@ -321,9 +343,15 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 	 */
 	//TODO offload logic to helper class
 	public void outClass(File out) {
+		System.out.println("Write file " + this._file.toString());
 
-		File myOut = new File(out.getAbsolutePath() + "/" + getPackageStructure(out.getAbsolutePath()) + _newName
-				+ ".as");
+		File myOut = new File(out.getAbsolutePath() + "/" + getPackageStructure(out.getAbsolutePath()) + _newName + ".as");
+
+		if (_newName == null)
+		{
+			myOut = new File(out.getAbsolutePath() + "/" + getPackageStructure(out.getAbsolutePath()) + this._file.getName());
+		}
+
 		int tabCount = 0;
 		try {
 			myOut.createNewFile();
@@ -426,6 +454,12 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 	public void setClassName(String className) {
 		this._className = className;
 		_newName = _className;
+		
+		if (ObfuscationSettings.isIgnoredClass(className))
+		{
+			//_renamed = false;
+			_classNameRenamed = true;
+		}
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import classes.renaming.RenameType;
 import classes.renaming.UniqueStringCreator;
 import data.IRenameLockable;
 import data.RenameObjectCounter;
+import java.util.Random;
 
 /**
  * Holds the information that needs to be stored for each package.
@@ -25,10 +26,19 @@ public class PackageAS implements IRenameLockable {
 		this._name = name;
 		_newName = name;
 		_classes = new ArrayList<ActionScriptClass>();
+		if (ObfuscationSettings.isIgnorePackage(name))
+		{
+			this.lockRename();
+		}
 	}
 
 	public void addClass(ActionScriptClass classToAdd) {
+		//DuongTC
+		// if (classToAdd.getClassName() == null)
+		// 	return;
 		_classes.add(classToAdd);
+		if (_renamed)
+			classToAdd.setNewPackageName(_name);
 	}
 
 	public String getName() {
@@ -37,8 +47,22 @@ public class PackageAS implements IRenameLockable {
 
 	public ActionScriptClass getActionScriptClass(String className) {
 		for (ActionScriptClass a : _classes) {
-			if (a.getClassName().equals(className))
-				return a;
+			if (a != null)
+			{
+				String fClassName = a.getClassName();
+
+				if (fClassName != null)
+				{
+					if (fClassName.equals(className))
+						return a;
+				}
+				// else
+				// {
+				// 	System.out.println("Found file without class: " + a.toString());
+				// 	System.out.println("Please correct it");
+				// 	System.exit(0);
+				// }
+			}
 		}
 		return null;
 	}
@@ -56,9 +80,14 @@ public class PackageAS implements IRenameLockable {
 			return i;
 
 		if (ObfuscationSettings.uniqueNames())
-			_newName = UniqueStringCreator.getUniqueName(RenameType.PACKAGENAME);
+			_newName = UniqueStringCreator.getUniqueName(RenameType.PACKAGENAME, getName());
 		else
-			_newName = "P" + i++;
+		{
+			Random rand = new Random();
+			i += rand.nextInt(10);
+			_newName = "P" + i;
+		}
+
 
 		for (ActionScriptClass asClass : _classes) {
 			asClass.setNewPackageName(_newName);

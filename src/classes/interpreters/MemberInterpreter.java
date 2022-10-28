@@ -94,6 +94,12 @@ public class MemberInterpreter {
 
 		checkType(variableName, parser, elements, variable);
 
+		variable.setProtected(occursBefore(elements, "protected", 9));
+		variable.setPrivated(occursBefore(elements, "private", 9));
+		variable.setVar(occursBefore(elements, "var", 7));
+		variable.setStatic(occursBefore(elements, "static", 8));
+		variable.setFunction(false);
+
 		if (addVarsTo != null)
 			addVarsTo.addVariable(variable);
 
@@ -225,7 +231,7 @@ public class MemberInterpreter {
 	 */
 	private static void checkVector(CodeParser parser, ArrayList<String> elements, Variable member, String type) {
 		if (type.equals("Vector.<")) {
-			System.out.println("type is a vector!");
+			//System.out.println("type is a vector!");
 			String vectorType = getOrFail(parser, elements, "Vector.<");
 			member.setVectorType(vectorType);
 		}
@@ -273,8 +279,14 @@ public class MemberInterpreter {
 		} else
 			function = new Variable(functionName);
 
-		// store whether this function overrides
+		//Search for member type
 		function.setOverride(occursBefore(elements, "override", 5));
+		function.setProtected(occursBefore(elements, "protected", 4));
+		function.setPrivated(occursBefore(elements, "private", 4));
+		function.setVar(false);
+		function.setStatic(occursBefore(elements, "static", 3));
+		function.setFunction(true);
+		//function.setConst(occursBefore(elements, "privated", 5));
 
 		// function definition should be followed by a '('
 		String validAfterFunction = getOrFail(parser, elements, "function definition! " + functionName);

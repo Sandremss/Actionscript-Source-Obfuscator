@@ -5,5 +5,5 @@ package classes.renaming;
  * @author sander
  */
 public enum RenameType {
-	VARIABLE, CLASSNAME, PACKAGENAME
+	VARIABLE, CLASSNAME, PACKAGENAME, LOCALVARIABLE
 }
