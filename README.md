@@ -121,6 +121,13 @@ Unsupported:
 		Without a type the variable or function cannot be referenced correctly, look out for warnings when you compile your original code for this.
 5.	Global function or field in separate .as file (global to the package)
 6.	Reflection, variable names will get changed.
-
+7.	Public/protected get magic method, such as public function get Width()
+8.	Multi level methods/properties calling in some case
+		Such as: 
+			ret = SLogicsCore.Character.Appliances.GetAll()
+		You should convert it to:
+			var ch: CCharacter = SLogicsCore.Character;
+			var app: CAppliances = ch.Appliances();
+			ret = app.getAll();
 
 
