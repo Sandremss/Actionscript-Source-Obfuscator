@@ -22,6 +22,11 @@ public class Variable implements IAddVariable, IRenameLockable {
 	private boolean _isOverride;
 	private boolean _anonymous = false;
 	private boolean _isVector = false;
+	private boolean _isProtected = false;
+	private boolean _isPrivated = false;
+	private boolean _isVar;
+	private boolean _isFunction;
+	private boolean _isStatic;
 
 	public Variable(String variableName) {
 		RenameObjectCounter.increaseCount(1);
@@ -97,6 +102,38 @@ public class Variable implements IAddVariable, IRenameLockable {
 		_isOverride = b;
 	}
 
+	public void setProtected(boolean b) {
+		_isProtected = b;
+	}
+
+	public void setPrivated(boolean b) {
+		_isPrivated = b;
+	}
+
+	public void setVar(boolean b) {
+		_isVar = b;
+	}
+
+    public void setFunction(boolean b) {
+		_isFunction = b;
+    }
+
+	public boolean isVar(){
+		return _isVar;
+	}
+
+	public boolean isFunction(){
+		return _isFunction;
+	}
+
+	public boolean isProtected(){
+		return _isProtected;
+	}
+
+	public boolean isPrivated(){
+		return _isPrivated;
+	}
+
 	public boolean isOverride() {
 		return _isOverride;
 	}
@@ -137,7 +174,7 @@ public class Variable implements IAddVariable, IRenameLockable {
 	}
 
 	public void setVectorType(String _vectorType) {
-		System.out.println("setting Vector type: " + _vectorType);
+		//System.out.println("setting Vector type: " + _vectorType);
 		this._vectorType = _vectorType;
 		_isVector = true;
 	}
@@ -145,4 +182,14 @@ public class Variable implements IAddVariable, IRenameLockable {
 	public boolean isVector() {
 		return _isVector;
 	}
+
+	public void setStatic(boolean b) {
+		_isStatic = b;
+	}
+
+	public boolean isStatic()
+	{
+		return _isStatic;
+	}
+
 }

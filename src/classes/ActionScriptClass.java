@@ -220,7 +220,18 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 	public int renameVariables(int index) {
 		if (_renamed)
 			return index;
-		int i = MemberRenamer.renameAllMembers(index, _members, this, _classManager);
+
+		int i = index;
+
+		MemberRenamer.setTypeAllMembers(index, _members, this, _classManager);
+		
+		if (!ObfuscationSettings.isIgnoredMemberInClass(this._className))
+		{
+			i = MemberRenamer.renameAllMembers(index, _members, this, _classManager);
+		}
+
+		i = MemberRenamer.renameAllLocalVars(i, _members, this, _classManager);
+		
 		_renamed = true;
 		return i;
 	}
@@ -448,11 +459,6 @@ public class ActionScriptClass implements IAskVariableName, IAddVariable, IClass
 		{
 			//_renamed = false;
 			_classNameRenamed = true;
-		}
-
-		if (ObfuscationSettings.isIgnoredMemberInClass(className))
-		{
-			_renamed = true;
 		}
 	}
 

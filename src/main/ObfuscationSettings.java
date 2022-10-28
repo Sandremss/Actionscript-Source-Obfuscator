@@ -155,7 +155,7 @@ public class ObfuscationSettings {
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
-		}		
+		}
 
 	}	
 	

@@ -304,7 +304,7 @@ public class RenamingExecuter {
 	private static ActionScriptClass checkVector(Variable var, int i, ArrayList<String> elements, IGetClass classManager, ActionScriptClass baseType, Variable inFunction, String superClassName) {
 		i++;
 		String next = elements.get(i);
-		System.out.println("point: " + next);
+		//System.out.println("point: " + next);
 		if (next.equals("[")) {
 			while (true) {
 				i++;

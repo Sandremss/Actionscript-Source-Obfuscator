@@ -285,7 +285,7 @@ public class Obfuscate implements IGetClass {
 			UniqueStringCreator.length = 10;
 		}
 
-		boolean localVars = false; //a.indexOf("-nolocal") == -1;
+		boolean localVars = a.indexOf("-nolocal") == -1;
 		boolean packages = a.indexOf("-nopackages") == -1;
 		boolean classNames = a.indexOf("-noclasses") == -1;
 		boolean uniqueRenaming = a.indexOf("-nouniquenames") == -1;
