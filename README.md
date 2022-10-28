@@ -48,6 +48,11 @@ Arguments:
 5. -namelength <length> | the length of each unique name, you need to also use -uniquenames
 6. -help | display available commands
 
+Settings files: Not required, MUST be stored in the working dir
+* ignoreclass.txt: List of class won't be renamed
+* ignorepackage.txt: List of package won't be renamed, all sub package and class inside this package still be renamed.
+* ignorerenamememberinclass.txt: List of class which all public and protected function, public variable won't be renamed. Private function, private and protected properties still be ranmed.
+* ignorevarname.txt: List of variable name, function name which won't be renamed. This affact for all public, protected and private functions/porperties.
 
 **Tips n Tricks:**
 
